@@ -1,0 +1,4 @@
+/home/jihu/mymalloc/cmake-build-debug/CMakeFiles/mymalloc.dir
+/home/jihu/mymalloc/cmake-build-debug/CMakeFiles/malloc_test.dir
+/home/jihu/mymalloc/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/jihu/mymalloc/cmake-build-debug/CMakeFiles/rebuild_cache.dir

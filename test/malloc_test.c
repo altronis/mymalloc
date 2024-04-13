@@ -1,6 +1,7 @@
 #include "mymalloc.h"
 
 int main(void) {
-    mymalloc(500000);
+    void* ptr = mymalloc(500000);
+    myfree(ptr);
     return 0;
 }

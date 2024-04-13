@@ -3,6 +3,9 @@
 #include "constants.h"
 
 void* mymalloc(size_t size) {
+    if (size == 0)
+        return NULL;
+
     if (size > SUPERBLOCK_SIZE / 2)
         return large_alloc(size);
 
@@ -10,5 +13,9 @@ void* mymalloc(size_t size) {
 }
 
 void myfree(void* ptr) {
+    if (ptr == NULL)
+        return;
 
+    if (is_large_alloc(ptr))
+        return large_free(ptr);
 }
