@@ -1,6 +1,6 @@
-#include <stdlib.h>
+#include "mymalloc.h"
 
 int main(void) {
-    malloc(8);
+    mymalloc(8);
     return 0;
 }

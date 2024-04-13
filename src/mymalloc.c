@@ -1,10 +1,11 @@
 #include "mymalloc.h"
+#include "debug.h"
 
-void* malloc(size_t size) {
-    printf("foo\n");
+void* mymalloc(size_t size) {
+    DPRINT("foo\n");
     return NULL;
 }
 
-void free(void* ptr) {
+void myfree(void* ptr) {
 
 }

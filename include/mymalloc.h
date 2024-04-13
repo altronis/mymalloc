@@ -1,10 +1,10 @@
 #ifndef MYMALLOC_MYMALLOC_H
 #define MYMALLOC_MYMALLOC_H
 
-#include <stdio.h>
+#include <stddef.h>
 
-void* malloc(size_t size);
+void* mymalloc(size_t size);
 
-void free(void* ptr);
+void myfree(void* ptr);
 
 #endif //MYMALLOC_MYMALLOC_H
