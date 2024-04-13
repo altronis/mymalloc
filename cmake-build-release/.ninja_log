@@ -1,6 +1,0 @@
-# ninja log v5
-1	46	1713048909898851800	CMakeFiles/mymalloc.dir/src/mymalloc.c.o	e0ba8bf3223baafc
-1	46	1713048909898851800	CMakeFiles/mymalloc.dir/src/largealloc.c.o	fc1501748ebcc18a
-2	47	1713048909898851800	CMakeFiles/malloc_test.dir/test/malloc_test.c.o	1be364aed6faae62
-46	201	1713048910048851800	libmymalloc.so	3428fc8597534dd6
-201	366	1713048910218851800	malloc_test	54586c4a41c38283
