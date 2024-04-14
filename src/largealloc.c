@@ -42,8 +42,8 @@ void large_free(void* ptr) {
     if (ret == -1)
         perror("munmap failed");
 
-    global_heap.in_use -= alloced_size;
-    global_heap.alloced -= alloced_size;
+    dec_usage(alloced_size);
+    dec_alloced(alloced_size);
 }
 
 bool is_large_alloc(void* ptr) {

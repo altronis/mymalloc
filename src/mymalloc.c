@@ -1,22 +1,18 @@
 #include "mymalloc.h"
 #include "largealloc.h"
-#include "macros.h"
-
-bool is_heap_initialized = false;
-Heap global_heap;
+#include "binmanager.h"
 
 void* mymalloc(size_t size) {
     if (size == 0)
         return NULL;
 
-    if (!is_heap_initialized) {
+    if (!is_heap_initialized)
         initialize_heap();
-    }
 
-    if (size > SUPERBLOCK_SIZE / 2)
+    if (size > max_block_size)
         return large_alloc(size);
 
-    return NULL;
+    return heap_alloc(size);
 }
 
 void myfree(void* ptr) {
@@ -24,5 +20,7 @@ void myfree(void* ptr) {
         return;
 
     if (is_large_alloc(ptr))
-        return large_free(ptr);
+        large_free(ptr);
+    else
+        heap_free(ptr);
 }

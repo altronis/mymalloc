@@ -17,7 +17,7 @@ typedef struct superblock_header {
     char* buffer_start;  // Start of buffer
     char* reap_position;  // Cursor into buffer for reap allocation
 
-} SuperblockHeader;
+} __attribute__ ((aligned (16))) SuperblockHeader;
 
 enum { buffer_size = SUPERBLOCK_SIZE - sizeof(SuperblockHeader) };
 
