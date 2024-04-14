@@ -1,6 +1,7 @@
 #include <sys/mman.h>
 
 #include "macros.h"
+#include "heap.h"
 #include "largealloc.h"
 
 typedef struct mmap_header {
@@ -20,6 +21,8 @@ void* large_alloc(size_t size) {
 
     DPRINT("large_alloc(): Allocated %zu bytes (%zu with header) at %p",
            size, alloced_size, ptr);
+    inc_usage(alloced_size);
+    inc_alloced(alloced_size);
 
     // Place the header at the pointer
     MmapHeader* header = ptr;
@@ -36,9 +39,11 @@ void large_free(void* ptr) {
            header->size, alloced_size, header);
 
     int ret = munmap(header, alloced_size);
-
     if (ret == -1)
         perror("munmap failed");
+
+    global_heap.in_use -= alloced_size;
+    global_heap.alloced -= alloced_size;
 }
 
 bool is_large_alloc(void* ptr) {
