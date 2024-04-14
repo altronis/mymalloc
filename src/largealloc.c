@@ -1,6 +1,6 @@
 #include <sys/mman.h>
 
-#include "constants.h"
+#include "macros.h"
 #include "largealloc.h"
 
 typedef struct mmap_header {
@@ -26,12 +26,15 @@ void* large_alloc(size_t size) {
     header->magic = LARGEALLOC_HEADER_MAGIC;
     header->size = size;
 
-    return ptr + sizeof(MmapHeader);
+    return GET_BUFFER_PTR(header, MmapHeader);
 }
 
 void large_free(void* ptr) {
-    MmapHeader* header = ptr - sizeof(MmapHeader);
+    MmapHeader* header = GET_HEADER_PTR(ptr, MmapHeader);
     size_t alloced_size = header->size + sizeof(MmapHeader);
+    DPRINT("large_free(): Freeing %zu bytes (%zu with header) at %p",
+           header->size, alloced_size, header);
+
     int ret = munmap(header, alloced_size);
 
     if (ret == -1)
@@ -39,6 +42,6 @@ void large_free(void* ptr) {
 }
 
 bool is_large_alloc(void* ptr) {
-    MmapHeader* header = ptr - sizeof(MmapHeader);
+    MmapHeader* header = GET_HEADER_PTR(ptr, MmapHeader);
     return header->magic == LARGEALLOC_HEADER_MAGIC;
 }

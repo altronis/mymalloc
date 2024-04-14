@@ -2,7 +2,7 @@
 #define MYMALLOC_HEAP_H
 
 #include <stddef.h>
-#include <constants.h>
+#include <macros.h>
 
 typedef struct heap {
     // Bins sorted by size
