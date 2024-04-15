@@ -20,21 +20,22 @@ typedef struct heap {
     size_t max_alloced;
 } Heap;
 
-extern bool is_heap_initialized;
+extern Heap global_heap;
+extern bool is_global_heap_initialized;
 
-void initialize_heap();
+void initialize_global_heap();
 
 // Increase/Decrease the in_use and alloced statistics of the heap
-void inc_usage(size_t added_usage);
+void inc_usage(Heap* heap, size_t added_usage);
 
-void inc_alloced(size_t added_alloc);
+void inc_alloced(Heap* heap, size_t added_alloc);
 
-void dec_usage(size_t bytes);
+void dec_usage(Heap* heap, size_t bytes);
 
-void dec_alloced(size_t bytes);
+void dec_alloced(Heap* heap, size_t bytes);
 
 // Allocate on the global heap
-void* heap_alloc(size_t size);
-void heap_free(void* ptr);
+void* heap_alloc(Heap* heap, size_t size);
+void heap_free(Heap* heap, void* ptr);
 
 #endif //MYMALLOC_HEAP_H

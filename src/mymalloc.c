@@ -7,13 +7,13 @@ void* mymalloc(size_t size) {
     if (size == 0)
         return NULL;
 
-    if (!is_heap_initialized)
-        initialize_heap();
+    if (!is_global_heap_initialized)
+        initialize_global_heap();
 
     if (size > max_block_size)
         return large_alloc(size);
 
-    return heap_alloc(size);
+    return heap_alloc(&global_heap, size);
 }
 
 void myfree(void* ptr) {
@@ -23,5 +23,5 @@ void myfree(void* ptr) {
     if (is_large_alloc(ptr))
         large_free(ptr);
     else
-        heap_free(ptr);
+        heap_free(&global_heap, ptr);
 }
