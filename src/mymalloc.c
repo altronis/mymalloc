@@ -1,5 +1,6 @@
 #include "mymalloc.h"
 #include "largealloc.h"
+#include <stdint.h>
 #include "binmanager.h"
 
 void* mymalloc(size_t size) {

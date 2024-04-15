@@ -7,6 +7,9 @@
 #include "binmanager.h"
 
 typedef struct heap {
+    // Recycling bin for empty superblocks.
+    Superblock* recycled_superblock;
+
     // Bins sorted by size
     BinManager size_bins[MAX_NUM_BINS];
 

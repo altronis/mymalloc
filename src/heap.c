@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "heap.h"
 #include "macros.h"
 
@@ -5,11 +6,6 @@ static Heap global_heap;
 bool is_heap_initialized = false;
 
 void initialize_heap() {
-    global_heap.in_use = 0;
-    global_heap.alloced = 0;
-    global_heap.max_in_use = 0;
-    global_heap.max_alloced = 0;
-
     init_size_table();
     is_heap_initialized = true;
 }
@@ -39,9 +35,15 @@ void* heap_alloc(size_t size) {
     size_t size_class = idx2class(bin_idx);
     DPRINT("Allocating %zu bytes on bin %d (size class = %zu)", size, bin_idx, size_class);
 
-    return NULL;
+    return bin_alloc(&global_heap.size_bins[bin_idx], &global_heap.recycled_superblock, size_class);
 }
 
 void heap_free(void* ptr) {
+    // Find the superblock the ptr resides in.
+    Superblock* s_ptr = (Superblock*) ((uintptr_t) ptr & ~(SUPERBLOCK_SIZE - 1));
+    size_t size_class = s_ptr->header.block_size;
+    int bin_idx = size2idx(size_class);
 
+    DPRINT("Freeing from bin %d (size class = %zu)", bin_idx, size_class);
+    bin_free(&global_heap.size_bins[bin_idx], &global_heap.recycled_superblock, ptr);
 }

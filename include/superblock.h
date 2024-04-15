@@ -1,8 +1,13 @@
 #ifndef MYMALLOC_SUPERBLOCK_H
 #define MYMALLOC_SUPERBLOCK_H
 
-#include "stddef.h"
+#include <stddef.h>
+#include <stdbool.h>
 #include "macros.h"
+
+typedef struct free_block {
+    struct free_block* next;
+} FreeBlock;
 
 typedef struct superblock_header {
     size_t block_size;  // Size of each individual block
@@ -12,7 +17,8 @@ typedef struct superblock_header {
     struct superblock* next;  // Next superblock
 
     unsigned int reapable_blocks;  // Number of blocks available to be reaped
-    unsigned int free_blocks;  // Number of free blocks
+    unsigned int num_free_blocks;  // Number of free blocks
+    FreeBlock* free_list;  // LIFO Singly linked list of free blocks
 
     char* buffer_start;  // Start of buffer
     char* reap_position;  // Cursor into buffer for reap allocation
@@ -26,5 +32,17 @@ typedef struct superblock {
     SuperblockHeader header;
     char buf[buffer_size];
 } Superblock;
+
+// Allocate and initialize a new superblock.
+Superblock* init_superblock(size_t block_size);
+
+// Reuse an existing (and empty) superblock, changing its block size and clearing its free list.
+void reset_superblock(Superblock* superblock, size_t block_size);
+
+void* superblock_alloc(Superblock* superblock);
+
+void superblock_free(Superblock* superblock, void* ptr);
+
+bool is_superblock_empty(Superblock* superblock);
 
 #endif //MYMALLOC_SUPERBLOCK_H

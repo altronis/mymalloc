@@ -12,5 +12,4 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 endif ()
 
 add_executable(malloc_test test/malloc_test.c)
-target_link_directories(malloc_test PUBLIC lib)
 target_link_libraries(malloc_test mymalloc)
