@@ -1,11 +1,14 @@
 #ifndef MYMALLOC_MACROS_H
 #define MYMALLOC_MACROS_H
 
+#include <assert.h>
 #include <stdio.h>
 
 #ifdef MYMALLOC_DEBUG
+#define ASSERT(x) assert(x)
 #define DPRINT(...) fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
 #else
+#define ASSERT
 #define DPRINT
 #endif
 

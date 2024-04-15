@@ -15,11 +15,6 @@ size_t idx2class(int idx);
 
 int size2idx(size_t size);
 
-// Actual allocation/free functions.
-void* bin_alloc(BinManager* bin_manager, Superblock** recycled_superblock_ptr, size_t size_class);
-
-void bin_free(BinManager* bin_manager, Superblock** recycled_superblock_ptr, void* ptr);
-
 extern size_t max_block_size;
 
 // Add to the head of the linked list (superblock becomes new head)
@@ -27,5 +22,11 @@ void push_into_bin(BinManager* bin_manager, unsigned int eidx, Superblock* super
 
 // Delete superblock from the linked list. Assumes that the superblock is in this list.
 void delete_from_bin(BinManager* bin_manager, unsigned int eidx, Superblock* superblock);
+
+// Get the emptiness class of a superblock.
+unsigned int get_eidx(Superblock* superblock);
+
+// Update the emptiness class of a superblock, pushing it into the appropriate list.
+void update_emptiness_class(BinManager* bin_manager, unsigned int old_eidx, Superblock* superblock);
 
 #endif //MYMALLOC_BINMANAGER_H
