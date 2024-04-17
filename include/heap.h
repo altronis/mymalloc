@@ -1,6 +1,7 @@
 #ifndef MYMALLOC_HEAP_H
 #define MYMALLOC_HEAP_H
 
+#include <pthread.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include "macros.h"
@@ -13,6 +14,9 @@ typedef struct heap {
     // Bins sorted by size
     BinManager size_bins[MAX_NUM_BINS];
 
+    // Lock for the heap
+    pthread_mutex_t mutex;
+
     // Usage statistics
     size_t in_use;
     size_t alloced;
@@ -21,9 +25,10 @@ typedef struct heap {
 } Heap;
 
 extern Heap global_heap;
-extern bool is_global_heap_initialized;
+extern Heap thread_heaps[MAX_HEAPS];
 
-void initialize_global_heap();
+// Get the heap ID of the calling thread based on the TID.
+Heap* get_thread_heap();
 
 // Increase/Decrease the in_use and alloced statistics of the heap
 void inc_usage(Heap* heap, size_t added_usage);
@@ -36,6 +41,6 @@ void dec_alloced(Heap* heap, size_t bytes);
 
 // Actual allocation/free functions
 void* heap_alloc(Heap* heap, size_t size);
-void heap_free(Heap* heap, void* ptr);
+void heap_free(void* ptr);
 
 #endif //MYMALLOC_HEAP_H

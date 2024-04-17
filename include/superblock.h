@@ -5,11 +5,14 @@
 #include <stdbool.h>
 #include "macros.h"
 
+typedef struct heap Heap;
+
 typedef struct free_block {
     struct free_block* next;
 } FreeBlock;
 
 typedef struct superblock_header {
+    Heap* owner;  // Owner of this superblock.
     size_t block_size;  // Size of each individual block
     unsigned int total_blocks; // Total number of blocks in the suprblock
 

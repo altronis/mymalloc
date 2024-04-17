@@ -38,7 +38,7 @@ Superblock* init_superblock(size_t block_size) {
         return superblock;
 
     reset_superblock(superblock, block_size);
-    DPRINT("    Allocated new superblock at %p with block size = %zu", superblock, block_size);
+    DPRINT("      Allocated new superblock at %p with block size = %zu", superblock, block_size);
     return superblock;
 }
 
@@ -62,12 +62,12 @@ void* superblock_alloc(Superblock* superblock) {
         ptr = header->reap_position;
         header->reap_position += header->block_size;
         header->reapable_blocks--;
-        DPRINT("    Reap mode: Allocating block at %p", ptr);
+        DPRINT("      Reap mode: Allocating block at %p", ptr);
     } else {
         // Freelist mode
         ptr = header->free_list;
         header->free_list = header->free_list->next;
-        DPRINT("    Freelist mode: Allocating block at %p", ptr);
+        DPRINT("      Freelist mode: Allocating block at %p", ptr);
     }
 
     header->num_free_blocks--;
@@ -86,7 +86,7 @@ void superblock_free(Superblock* superblock, void* ptr) {
     header->free_list = ptr;
 
     header->num_free_blocks++;
-    DPRINT("    Free'd block at %p", ptr);
+    DPRINT("      Free'd block at %p", ptr);
 }
 
 bool is_superblock_empty(Superblock* superblock) {

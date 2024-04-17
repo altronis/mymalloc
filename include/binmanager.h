@@ -9,6 +9,8 @@ typedef struct bin_manager {
     unsigned int num_nonfull_superblocks;  // Number of superblocks in this bin that are not full
 } BinManager;
 
+extern bool size_table_initialized;
+
 // Initialize the size table. Called when the heap is initialized.
 void init_size_table();
 

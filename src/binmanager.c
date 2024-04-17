@@ -8,6 +8,7 @@
 #define SET_PREV(superblock, target) (&(superblock)->header)->prev = (target)
 #define SET_NEXT(superblock, target) (&(superblock)->header)->next = (target)
 
+bool size_table_initialized;
 static size_t size_table[MAX_NUM_BINS];  // Stores block size for each bin
 size_t max_block_size;  // Largest block size before large_alloc handles it
 static int num_size_bins;
@@ -44,6 +45,7 @@ void init_size_table() {
 
     num_size_bins = idx + 1;
     max_block_size = sz;
+    size_table_initialized = true;
 
     ASSERT(2 * max_block_size + sizeof(SuperblockHeader) <= SUPERBLOCK_SIZE);  // Check if 2 max_blocks can fit
     DPRINT("Size table initialized with max_block_size = %zu and with %d bins", max_block_size, num_size_bins);
@@ -102,20 +104,20 @@ void delete_from_bin(BinManager* bin_manager, unsigned int eidx, Superblock* sup
     if (GET_PREV(superblock) == superblock) {
         ASSERT(GET_NEXT(superblock) == superblock);
         *list_head_ptr = NULL;
-        return;
+    } else {
+        // General case
+        // If deleting head, make the next element the new head
+        Superblock *prev_sb = GET_PREV(superblock);
+        Superblock *next_sb = GET_NEXT(superblock);
+        ASSERT(prev_sb != NULL);
+        ASSERT(next_sb != NULL);
+
+        SET_NEXT(prev_sb, next_sb);
+        SET_PREV(next_sb, prev_sb);
+
+        if (list_head == superblock)
+            *list_head_ptr = next_sb;
     }
-    // General case
-    // If deleting head, make the next element the new head
-    Superblock* prev_sb = GET_PREV(superblock);
-    Superblock* next_sb = GET_NEXT(superblock);
-    ASSERT(prev_sb != NULL);
-    ASSERT(next_sb != NULL);
-
-    SET_NEXT(prev_sb, next_sb);
-    SET_PREV(next_sb, prev_sb);
-
-    if (list_head == superblock)
-        *list_head_ptr = next_sb;
 
     if (eidx > 0) {
         ASSERT(bin_manager->num_nonfull_superblocks > 0);
@@ -139,5 +141,5 @@ void update_emptiness_class(BinManager* bin_manager, unsigned int old_eidx, Supe
     unsigned int new_eidx = get_eidx(superblock);
     delete_from_bin(bin_manager, old_eidx, superblock);
     push_into_bin(bin_manager, new_eidx, superblock);
-    DPRINT("  Re-assigned superblock %p to emptiness class %u", superblock, new_eidx);
+    DPRINT("    Re-assigned superblock %p to emptiness class %u", superblock, new_eidx);
 }

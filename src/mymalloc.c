@@ -1,19 +1,22 @@
+#include <stdint.h>
+
 #include "mymalloc.h"
 #include "largealloc.h"
-#include <stdint.h>
 #include "binmanager.h"
 
 void* mymalloc(size_t size) {
     if (size == 0)
         return NULL;
 
-    if (!is_global_heap_initialized)
-        initialize_global_heap();
+    if (!size_table_initialized)
+        init_size_table();
 
     if (size > max_block_size)
         return large_alloc(size);
 
-    return heap_alloc(&global_heap, size);
+    Heap* heap = get_thread_heap();
+    DPRINT("Heap %p: allocating %zu bytes", heap, size);
+    return heap_alloc(heap, size);
 }
 
 void myfree(void* ptr) {
@@ -23,5 +26,5 @@ void myfree(void* ptr) {
     if (is_large_alloc(ptr))
         large_free(ptr);
     else
-        heap_free(&global_heap, ptr);
+        heap_free(ptr);
 }

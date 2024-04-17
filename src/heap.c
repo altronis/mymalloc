@@ -2,12 +2,18 @@
 #include "heap.h"
 #include "macros.h"
 
-Heap global_heap;
-bool is_global_heap_initialized = false;
+#define HEAP_INITIALIZER { \
+    .mutex = PTHREAD_MUTEX_INITIALIZER, \
+}
 
-void initialize_global_heap() {
-    init_size_table();
-    is_global_heap_initialized = true;
+Heap global_heap = HEAP_INITIALIZER;
+Heap thread_heaps[MAX_HEAPS] = {HEAP_INITIALIZER};
+
+Heap* get_thread_heap() {
+    pthread_t tid = pthread_self();
+    unsigned long idx = (tid * 11400714819323198485UL) >> (64 - LG_MAX_HEAPS);  // Knuth hash
+    ASSERT(idx >= 0 && idx < MAX_HEAPS);
+    return &thread_heaps[idx];
 }
 
 void inc_usage(Heap* heap, size_t added_usage) {
@@ -38,7 +44,7 @@ void* bin_alloc(Heap* heap, BinManager* bin_manager, size_t size_class) {
     for (int eidx = 1; eidx < NUM_EMPTINESS_CLASSES; eidx++) {
         s_ptr = bin_manager->emptiness_bins[eidx];
         if (s_ptr != NULL) {
-            DPRINT("  Allocating from emptiness class %d at superblock %p", eidx, s_ptr);
+            DPRINT("    Allocating from emptiness class %d at superblock %p", eidx, s_ptr);
             break;
         }
     }
@@ -51,7 +57,7 @@ void* bin_alloc(Heap* heap, BinManager* bin_manager, size_t size_class) {
 
         heap->recycled_superblock = recycled_superblock->header.next;
         push_into_bin(bin_manager, NUM_EMPTINESS_CLASSES - 1, s_ptr);
-        DPRINT("  Allocating from recycled superblock %p", s_ptr);
+        DPRINT("    Allocating from recycled superblock %p", s_ptr);
     }
     // None found in this bin. Allocate a new superblock.
     if (s_ptr == NULL) {
@@ -60,6 +66,7 @@ void* bin_alloc(Heap* heap, BinManager* bin_manager, size_t size_class) {
             return NULL;
 
         // Add it to the emptiest class.
+        s_ptr->header.owner = heap;
         inc_alloced(heap, SUPERBLOCK_SIZE);
         push_into_bin(bin_manager, NUM_EMPTINESS_CLASSES - 1, s_ptr);
     }
@@ -84,7 +91,7 @@ void bin_free(Heap* heap, BinManager* bin_manager, void* ptr) {
     if (is_superblock_empty(s_ptr)) {
         delete_from_bin(bin_manager, old_eidx, s_ptr);
 
-        DPRINT("  Superblock %p is now empty. Recycling it", s_ptr);
+        DPRINT("    Superblock %p is now empty. Recycling it", s_ptr);
         Superblock* recycle_list_head = heap->recycled_superblock;
 
         if (recycle_list_head == NULL)
@@ -101,20 +108,22 @@ void bin_free(Heap* heap, BinManager* bin_manager, void* ptr) {
 void* heap_alloc(Heap* heap, size_t size) {
     int bin_idx = size2idx(size);
     size_t size_class = idx2class(bin_idx);
-    DPRINT("Allocating %zu bytes on bin %d (size class = %zu)", size, bin_idx, size_class);
+    DPRINT("  Allocating %zu bytes on bin %d (size class = %zu)", size, bin_idx, size_class);
 
     void* ret_ptr = bin_alloc(heap, &heap->size_bins[bin_idx], size_class);
     inc_usage(heap, size_class);
     return ret_ptr;
 }
 
-void heap_free(Heap* heap, void* ptr) {
+void heap_free(void* ptr) {
     // Find the superblock the ptr resides in.
     Superblock* s_ptr = (Superblock*) ((uintptr_t) ptr & ~(SUPERBLOCK_SIZE - 1));
     size_t size_class = s_ptr->header.block_size;
     int bin_idx = size2idx(size_class);
 
-    DPRINT("Freeing from bin %d (size class = %zu)", bin_idx, size_class);
+    Heap* heap = s_ptr->header.owner;
+    DPRINT("  Freeing from heap %p, bin %d (size class = %zu)", heap, bin_idx, size_class);
+
     bin_free(heap, &heap->size_bins[bin_idx], ptr);
     dec_usage(heap, size_class);
 }
