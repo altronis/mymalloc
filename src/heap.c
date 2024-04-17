@@ -103,7 +103,7 @@ void* heap_alloc(Heap* heap, size_t size) {
     size_t size_class = idx2class(bin_idx);
     DPRINT("Allocating %zu bytes on bin %d (size class = %zu)", size, bin_idx, size_class);
 
-    void* ret_ptr = bin_alloc(&global_heap, &global_heap.size_bins[bin_idx], size_class);
+    void* ret_ptr = bin_alloc(heap, &heap->size_bins[bin_idx], size_class);
     inc_usage(heap, size_class);
     return ret_ptr;
 }
@@ -115,6 +115,6 @@ void heap_free(Heap* heap, void* ptr) {
     int bin_idx = size2idx(size_class);
 
     DPRINT("Freeing from bin %d (size class = %zu)", bin_idx, size_class);
-    bin_free(&global_heap, &global_heap.size_bins[bin_idx], ptr);
+    bin_free(heap, &heap->size_bins[bin_idx], ptr);
     dec_usage(heap, size_class);
 }

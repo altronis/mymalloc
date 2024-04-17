@@ -6,6 +6,7 @@
 typedef struct bin_manager {
     // Linked lists sorted by emptiness class (fullest to emptiest)
     Superblock* emptiness_bins[NUM_EMPTINESS_CLASSES];
+    unsigned int num_nonfull_superblocks;  // Number of superblocks in this bin that are not full
 } BinManager;
 
 // Initialize the size table. Called when the heap is initialized.

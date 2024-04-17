@@ -21,8 +21,6 @@ void* large_alloc(size_t size) {
 
     DPRINT("large_alloc(): Allocated %zu bytes (%zu with header) at %p",
            size, alloced_size, ptr);
-    inc_usage(&global_heap, alloced_size);
-    inc_alloced(&global_heap, alloced_size);
 
     // Place the header at the pointer
     MmapHeader* header = ptr;
@@ -41,9 +39,6 @@ void large_free(void* ptr) {
     int ret = munmap(header, alloced_size);
     if (ret == -1)
         perror("munmap failed");
-
-    dec_usage(&global_heap, alloced_size);
-    dec_alloced(&global_heap, alloced_size);
 }
 
 bool is_large_alloc(void* ptr) {

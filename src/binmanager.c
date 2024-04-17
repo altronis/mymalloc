@@ -88,6 +88,9 @@ void push_into_bin(BinManager* bin_manager, unsigned int eidx, Superblock* super
         SET_PREV(list_head, superblock);
         *list_head_ptr = superblock;
     }
+
+    if (eidx > 0)
+        bin_manager->num_nonfull_superblocks++;
 }
 
 void delete_from_bin(BinManager* bin_manager, unsigned int eidx, Superblock* superblock){
@@ -113,6 +116,11 @@ void delete_from_bin(BinManager* bin_manager, unsigned int eidx, Superblock* sup
 
     if (list_head == superblock)
         *list_head_ptr = next_sb;
+
+    if (eidx > 0) {
+        ASSERT(bin_manager->num_nonfull_superblocks > 0);
+        bin_manager->num_nonfull_superblocks--;
+    }
 }
 
 unsigned int get_eidx(Superblock* superblock) {
