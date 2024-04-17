@@ -39,6 +39,8 @@ void dec_usage(Heap* heap, size_t bytes);
 
 void dec_alloced(Heap* heap, size_t bytes);
 
+bool is_empty_enough(Heap* heap);
+
 // Actual allocation/free functions
 void* heap_alloc(Heap* heap, size_t size);
 void heap_free(void* ptr);

@@ -11,7 +11,7 @@
 bool size_table_initialized;
 static size_t size_table[MAX_NUM_BINS];  // Stores block size for each bin
 size_t max_block_size;  // Largest block size before large_alloc handles it
-static int num_size_bins;
+int num_size_bins;
 
 void init_size_table() {
     size_t half_sb = (SUPERBLOCK_SIZE - sizeof(SuperblockHeader)) / 2;

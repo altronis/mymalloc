@@ -10,6 +10,7 @@ typedef struct bin_manager {
 } BinManager;
 
 extern bool size_table_initialized;
+extern int num_size_bins;
 
 // Initialize the size table. Called when the heap is initialized.
 void init_size_table();

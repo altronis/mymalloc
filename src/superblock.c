@@ -1,5 +1,6 @@
 #include <sys/mman.h>
 #include <stdint.h>
+#include <pthread.h>
 #include "superblock.h"
 
 static Superblock* allocate_new_superblock() {
@@ -37,9 +38,20 @@ Superblock* init_superblock(size_t block_size) {
     if (superblock == NULL)
         return superblock;
 
+    pthread_mutex_init(&superblock->header.mutex, NULL);
     reset_superblock(superblock, block_size);
     DPRINT("      Allocated new superblock at %p with block size = %zu", superblock, block_size);
     return superblock;
+}
+
+void lock_superblock(Superblock* superblock) {
+    DPRINT("      Locking superblock %p...", superblock);
+    pthread_mutex_lock(&superblock->header.mutex);
+}
+
+void unlock_superblock(Superblock* superblock) {
+    DPRINT("      Unlocking superblock %p...", superblock);
+    pthread_mutex_unlock(&superblock->header.mutex);
 }
 
 void reset_superblock(Superblock* superblock, size_t block_size) {
@@ -92,4 +104,10 @@ void superblock_free(Superblock* superblock, void* ptr) {
 bool is_superblock_empty(Superblock* superblock) {
     SuperblockHeader* header = &(superblock->header);
     return header->num_free_blocks == header->total_blocks;
+}
+
+int used_bytes(Superblock* superblock) {
+    SuperblockHeader* header = &(superblock->header);
+    int used_blocks = header->total_blocks - header->num_free_blocks;
+    return used_blocks * header->block_size;
 }
