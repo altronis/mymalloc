@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <heap.h>
 
-void* mymalloc(size_t size);
+void* malloc(size_t size);
 
-void myfree(void* ptr);
+void free(void* ptr);
 
 #endif //MYMALLOC_MYMALLOC_H

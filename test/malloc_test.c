@@ -1,9 +1,9 @@
-#include "mymalloc.h"
+#include <stdlib.h>
 
 int main(void) {
-    void* ptr = mymalloc(400);
-    myfree(ptr);
-    ptr = mymalloc(442);
-    myfree(ptr);
+    void* ptr = malloc(400);
+    free(ptr);
+    ptr = malloc(442);
+    free(ptr);
     return 0;
 }

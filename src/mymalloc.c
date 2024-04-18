@@ -1,10 +1,8 @@
-#include <stdint.h>
-
 #include "mymalloc.h"
 #include "largealloc.h"
 #include "binmanager.h"
 
-void* mymalloc(size_t size) {
+void* malloc(size_t size) {
     if (size == 0)
         return NULL;
 
@@ -19,7 +17,7 @@ void* mymalloc(size_t size) {
     return heap_alloc(heap, size);
 }
 
-void myfree(void* ptr) {
+void free(void* ptr) {
     if (ptr == NULL)
         return;
 
