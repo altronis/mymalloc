@@ -13,6 +13,7 @@ typedef struct free_block {
 } FreeBlock;
 
 typedef struct superblock_header {
+    int magic;
     Heap* owner;  // Owner of this superblock.
     pthread_mutex_t mutex;
 

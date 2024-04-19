@@ -39,6 +39,8 @@ Superblock* init_superblock(size_t block_size) {
         return superblock;
 
     pthread_mutex_init(&superblock->header.mutex, NULL);
+    superblock->header.magic = HEADER_MAGIC;
+
     reset_superblock(superblock, block_size);
     DPRINT("      Allocated new superblock at %p with block size = %zu", superblock, block_size);
     return superblock;
@@ -46,6 +48,7 @@ Superblock* init_superblock(size_t block_size) {
 
 void lock_superblock(Superblock* superblock) {
     DPRINT("      Locking superblock %p...", superblock);
+    ASSERT(superblock->header.magic == HEADER_MAGIC);
     pthread_mutex_lock(&superblock->header.mutex);
 }
 

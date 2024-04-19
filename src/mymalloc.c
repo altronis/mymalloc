@@ -18,6 +18,7 @@ void* malloc(size_t size) {
 }
 
 void free(void* ptr) {
+    DPRINT("Freeing %p...", ptr);
     if (ptr == NULL)
         return;
 

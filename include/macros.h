@@ -29,7 +29,7 @@
 #define NUM_EMPTINESS_CLASSES 5
 #define EMPTY_FRAC (1 / (double) (NUM_EMPTINESS_CLASSES - 1))
 
-#define LARGEALLOC_HEADER_MAGIC 0x8BADF00D
+#define HEADER_MAGIC 0x8BADF00D
 
 // Given ptr to buffer and header type, get ptr to header
 #define GET_HEADER_PTR(ptr, header_type) ((header_type*) ((char*) (ptr) - sizeof(header_type)))

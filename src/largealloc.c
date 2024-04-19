@@ -24,7 +24,7 @@ void* large_alloc(size_t size) {
 
     // Place the header at the pointer
     MmapHeader* header = ptr;
-    header->magic = LARGEALLOC_HEADER_MAGIC;
+    header->magic = HEADER_MAGIC;
     header->size = size;
 
     return GET_BUFFER_PTR(header, MmapHeader);
@@ -43,5 +43,5 @@ void large_free(void* ptr) {
 
 bool is_large_alloc(void* ptr) {
     MmapHeader* header = GET_HEADER_PTR(ptr, MmapHeader);
-    return header->magic == LARGEALLOC_HEADER_MAGIC;
+    return header->magic == HEADER_MAGIC;
 }
