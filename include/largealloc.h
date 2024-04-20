@@ -7,6 +7,8 @@
 // Handles allocation for objects of size greater than S/2
 void* large_alloc(size_t size);
 
+void* large_realloc(void* ptr, size_t size);
+
 void large_free(void* ptr);
 
 // Determine if a pointer was allocated using large_alloc

@@ -100,6 +100,7 @@ static Superblock* find_emptiest_sb(Heap* heap, int* bin_idx, int* eidx) {
     }
 
     ASSERT(false);
+    return NULL;
 }
 
 static void transfer_sb_to_global(Heap* heap) {
@@ -242,6 +243,11 @@ void* heap_alloc(Heap* heap, size_t size) {
 
     unlock_heap(heap);
     return ret_ptr;
+}
+
+size_t get_block_size(void* ptr) {
+    Superblock* s_ptr = (Superblock*) ((uintptr_t) ptr & ~(SUPERBLOCK_SIZE - 1));
+    return s_ptr->header.block_size;
 }
 
 void heap_free(void* ptr) {

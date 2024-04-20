@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <sys/mman.h>
 
 #include "macros.h"
@@ -24,10 +25,31 @@ void* large_alloc(size_t size) {
 
     // Place the header at the pointer
     MmapHeader* header = ptr;
-    header->magic = HEADER_MAGIC;
+    header->magic = MMAP_HEADER_MAGIC;
     header->size = size;
 
     return GET_BUFFER_PTR(header, MmapHeader);
+}
+
+void* large_realloc(void* ptr, size_t size) {
+    MmapHeader* old_header = GET_HEADER_PTR(ptr, MmapHeader);
+    size_t old_alloced_size = old_header->size + sizeof(MmapHeader);
+    size_t new_alloced_size = size + sizeof(MmapHeader);
+
+    void* new_ptr = mremap(old_header, old_alloced_size, new_alloced_size, MREMAP_MAYMOVE);
+    if (new_ptr == MAP_FAILED) {
+        perror("mremap failed");
+        return NULL;
+    }
+    DPRINT("large_realloc(): Allocated %zu bytes (%zu with header) at %p",
+           size, new_alloced_size, new_ptr);
+
+    // Place the header at the pointer
+    MmapHeader* new_header = new_ptr;
+    new_header->magic = MMAP_HEADER_MAGIC;
+    new_header->size = size;
+
+    return GET_BUFFER_PTR(new_header, MmapHeader);
 }
 
 void large_free(void* ptr) {
@@ -43,5 +65,5 @@ void large_free(void* ptr) {
 
 bool is_large_alloc(void* ptr) {
     MmapHeader* header = GET_HEADER_PTR(ptr, MmapHeader);
-    return header->magic == HEADER_MAGIC;
+    return header->magic == MMAP_HEADER_MAGIC;
 }

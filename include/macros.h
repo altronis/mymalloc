@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #ifdef MYMALLOC_DEBUG
-#define ASSERT(x) assert(x)
+#define ASSERT(x) if (!(x)) fprintf(stderr, "Assertion failed: %s:%d at %s()\n", __FILE__, __LINE__, __func__)
 #define DPRINT(...) fprintf(stderr, __VA_ARGS__); fprintf(stderr, "\n")
 #else
 #define ASSERT
@@ -29,6 +29,7 @@
 #define NUM_EMPTINESS_CLASSES 5
 #define EMPTY_FRAC (1 / (double) (NUM_EMPTINESS_CLASSES - 1))
 
+#define MMAP_HEADER_MAGIC 0xDEADBEEF
 #define HEADER_MAGIC 0x8BADF00D
 
 // Given ptr to buffer and header type, get ptr to header

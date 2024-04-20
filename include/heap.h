@@ -45,4 +45,7 @@ bool is_empty_enough(Heap* heap);
 void* heap_alloc(Heap* heap, size_t size);
 void heap_free(void* ptr);
 
+// Get block size from allocated ptr
+size_t get_block_size(void* ptr);
+
 #endif //MYMALLOC_HEAP_H
