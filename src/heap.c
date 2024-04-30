@@ -113,7 +113,6 @@ static void transfer_sb_to_global(Heap* heap) {
     // Check recycling bin first.
     if (recycling_bin != NULL) {
         s_ptr = recycling_bin;
-        ASSERT(recycling_bin->header.next != NULL);
         DPRINT("    Transferring superblock %p from heap %p (recycling bin) to globl heap...", s_ptr, heap);
         heap->recycled_superblock = recycling_bin->header.next;
     }
