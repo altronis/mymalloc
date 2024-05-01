@@ -1,9 +1,9 @@
-#define _GNU_SOURCE
 #include <sys/mman.h>
 
 #include "macros.h"
 #include "heap.h"
 #include "largealloc.h"
+#include "string.h"
 
 typedef struct mmap_header {
     int magic;
@@ -36,11 +36,15 @@ void* large_realloc(void* ptr, size_t size) {
     size_t old_alloced_size = old_header->size + sizeof(MmapHeader);
     size_t new_alloced_size = size + sizeof(MmapHeader);
 
-    void* new_ptr = mremap(old_header, old_alloced_size, new_alloced_size, MREMAP_MAYMOVE);
+    void* new_ptr = mmap(NULL, new_alloced_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (new_ptr == MAP_FAILED) {
-        perror("mremap failed");
+        perror("mmap failed");
         return NULL;
     }
+
+    memcpy(new_ptr, old_header, old_alloced_size);
+    munmap(old_header, old_alloced_size);
+
     DPRINT("large_realloc(): Allocated %zu bytes (%zu with header) at %p",
            size, new_alloced_size, new_ptr);
 
